@@ -1,4 +1,8 @@
-# Create systemd unit
+# Installation
+Clone the repo
+```
+git clone https://github.com/fapgomes/owl2mqtt.git
+```
 
 Create the system file
 
