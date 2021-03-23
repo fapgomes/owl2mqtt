@@ -80,4 +80,4 @@ Number                  owlFase3Day                 "Fase 3 dia [%.1f wh]"      
 Number                  owlrssi                     "RSSI [%d]"                                 <qualityofservice>      (gOwl)                      { channel="mqtt:topic:rabbitmq:owl2mqtt:rssi" }
 Number                  owllqi                      "lqi [%d]"                                  <qualityofservice>      (gOwl)                      { channel="mqtt:topic:rabbitmq:owl2mqtt:lqi" }
 ```
-  
+![Screenshot_20210323_160727](https://user-images.githubusercontent.com/39247306/112178710-e5941b00-8bf1-11eb-8791-71f7d7615a22.png)  
