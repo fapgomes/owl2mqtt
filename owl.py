@@ -4,6 +4,7 @@ import struct
 import json
 import configparser
 from xml.etree import ElementTree
+import syslog
 
 def on_connect(client, userdata, flags, rc):
  
@@ -15,6 +16,8 @@ def on_connect(client, userdata, flags, rc):
  
     else:
         print("Connection failed")
+
+syslog.syslog(syslog.LOG_INFO, "Starting owl2mqtt...")
 
 config = configparser.ConfigParser()
 config.read('owl2mqtt.conf')
@@ -78,6 +81,7 @@ while True:
             if day is not None:
                 day_value = float(day.text)
 
+            syslog.syslog(syslog.LOG_INFO, "reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
             client.publish("owl/"+root.tag+"/timestamp", timestamp_value)
             client.publish("owl/"+root.tag+"/battery", battery_value)
             client.publish("owl/"+root.tag+"/rssi", signal_rssi_value)
