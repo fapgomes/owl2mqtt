@@ -67,6 +67,7 @@ while True:
             signal_rssi_value = signal.attrib["rssi"]
             signal_lqi_value = signal.attrib["lqi"]
 
+        syslog.syslog(syslog.LOG_INFO, "reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
         for chan in root.iter('chan'):
             chan_value = 0
             chan_value = chan.attrib["id"]
@@ -81,7 +82,6 @@ while True:
             if day is not None:
                 day_value = float(day.text)
 
-            syslog.syslog(syslog.LOG_INFO, "reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
             client.publish("owl/"+root.tag+"/timestamp", timestamp_value)
             client.publish("owl/"+root.tag+"/battery", battery_value)
             client.publish("owl/"+root.tag+"/rssi", signal_rssi_value)
