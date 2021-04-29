@@ -6,16 +6,21 @@ import configparser
 from xml.etree import ElementTree
 import syslog
 
+# for debugging only
+debug = 0
+
 def on_connect(client, userdata, flags, rc):
- 
     if rc == 0:
-        print("Connected to broker")
- 
+        syslog.syslog(syslog.LOG_INFO, "Connected to broker with the result code: " + str(rc))
         global Connected                #Use global variable
         Connected = True                #Signal connection 
- 
     else:
-        print("Connection failed")
+        syslog.syslog(syslog.LOG_INFO, "Connected failed with the result code: " + str(rc))
+
+def on_publish(client, userdata, result):             #create function for callback
+    if debug :
+        syslog.syslog(syslog.LOG_INFO, "Data published result: " + str(result))
+    pass
 
 syslog.syslog(syslog.LOG_INFO, "Starting owl2mqtt...")
 
@@ -34,6 +39,7 @@ broker_password = config['mqtt']['password']
 client = mqttClient.Client("owl2mqtt client")
 client.username_pw_set(broker_username, password=broker_password)
 client.on_connect= on_connect
+client.on_publish = on_publish
 client.connect(broker_address, port=broker_port)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -68,6 +74,11 @@ while True:
             signal_lqi_value = signal.attrib["lqi"]
 
         syslog.syslog(syslog.LOG_INFO, "reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
+        client.publish("owl/"+root.tag+"/timestamp", timestamp_value)
+        client.publish("owl/"+root.tag+"/battery", battery_value)
+        client.publish("owl/"+root.tag+"/rssi", signal_rssi_value)
+        client.publish("owl/"+root.tag+"/lqi", signal_lqi_value)
+
         for chan in root.iter('chan'):
             chan_value = 0
             chan_value = chan.attrib["id"]
@@ -82,9 +93,5 @@ while True:
             if day is not None:
                 day_value = float(day.text)
 
-            client.publish("owl/"+root.tag+"/timestamp", timestamp_value)
-            client.publish("owl/"+root.tag+"/battery", battery_value)
-            client.publish("owl/"+root.tag+"/rssi", signal_rssi_value)
-            client.publish("owl/"+root.tag+"/lqi", signal_lqi_value)
             client.publish("owl/"+root.tag+"/channel"+chan_value, current_value)
             client.publish("owl/"+root.tag+"/daychannel"+chan_value, day_value)
