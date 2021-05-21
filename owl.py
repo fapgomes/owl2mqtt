@@ -34,7 +34,6 @@ def on_publish(client, userdata, result):             #create function for callb
         syslog.syslog(syslog.LOG_INFO, "Data published result: " + str(result))
     pass
 
-syslog.syslog(syslog.LOG_INFO, "Starting owl2mqtt...")
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 config = configparser.ConfigParser()
@@ -42,12 +41,16 @@ config.read('owl2mqtt.conf')
 
 OWL_PORT = int(config['owl']['owl_port'])
 OWL_GROUP = config['owl']['owl_group']
+OWL_LISTEN_IP = config['owl']['owl_listen_ip']
 
 broker_address = config['mqtt']['address']
 broker_port = int(config['mqtt']['port'])
 broker_username = config['mqtt']['username']
 broker_password = config['mqtt']['password']
 
+if debug :
+    logging.debug("Starting owl2mqtt on ip: " + OWL_LISTEN_IP)
+syslog.syslog(syslog.LOG_INFO, "Starting owl2mqtt on ip: " + OWL_LISTEN_IP)
 
 client = mqttClient.Client("owl2mqtt client")
 client.username_pw_set(broker_username, password=broker_password)
@@ -60,7 +63,10 @@ time.sleep(5)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind((OWL_GROUP, OWL_PORT))
-mreq = struct.pack("=4sl", socket.inet_aton(OWL_GROUP), socket.INADDR_ANY)
+mreq = struct.pack(
+    '4sl' if OWL_LISTEN_IP == '' else '4s4s',
+    socket.inet_aton(OWL_GROUP),
+    socket.INADDR_ANY if OWL_LISTEN_IP == '' else socket.inet_aton(OWL_LISTEN_IP))
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:

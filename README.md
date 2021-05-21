@@ -4,7 +4,7 @@ Clone the repo
 cd /opt
 sudo git clone https://github.com/fapgomes/owl2mqtt.git
 ```
-Copy the sample config file, and put your own configurations
+Copy the sample config file, and put your own configurations (leave owl_listen_ip blank, if you don't known)
 ```
 cd /opt/owl2mqtt/
 sudo cp owl2mqtt.conf-sample owl2mqtt.conf
