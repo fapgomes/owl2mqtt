@@ -6,6 +6,7 @@ import time
 import configparser
 from xml.etree import ElementTree
 import syslog
+import logging, sys
 
 # for debugging only
 debug = 0
@@ -13,10 +14,14 @@ Connected = 0
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
+        if debug :
+            logging.debug('Connected to broker with the result code: ' + str(rc))
         syslog.syslog(syslog.LOG_INFO, "Connected to broker with the result code: " + str(rc))
         global Connected                #Use global variable
         Connected = 1                   #Signal connection 
     else:
+        if debug :
+            logging.debug('Connected to broker failed with the result code: ' + str(rc))
         syslog.syslog(syslog.LOG_INFO, "Connected to broker failed with the result code: " + str(rc))
 
 def on_disconnect(client, userdata, rc):
@@ -25,10 +30,12 @@ def on_disconnect(client, userdata, rc):
 
 def on_publish(client, userdata, result):             #create function for callback
     if debug :
+        logging.debug('Data published result: ' + str(result))
         syslog.syslog(syslog.LOG_INFO, "Data published result: " + str(result))
     pass
 
 syslog.syslog(syslog.LOG_INFO, "Starting owl2mqtt...")
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 config = configparser.ConfigParser()
 config.read('owl2mqtt.conf')
@@ -58,6 +65,8 @@ sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:
     client.loop()
+    if debug :
+        logging.debug('Connected: ' + str(Connected))
     syslog.syslog(syslog.LOG_INFO, "Connected: " + str(Connected))
     time.sleep(0.5)
     
@@ -86,6 +95,8 @@ while True:
                 signal_rssi_value = signal.attrib["rssi"]
                 signal_lqi_value = signal.attrib["lqi"]
 
+            if debug :
+                logging.debug("reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
             syslog.syslog(syslog.LOG_INFO, "reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
             client.publish("owl/"+root.tag+"/timestamp", timestamp_value)
             client.publish("owl/"+root.tag+"/battery", battery_value)
