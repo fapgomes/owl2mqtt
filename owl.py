@@ -8,36 +8,37 @@ from xml.etree import ElementTree
 import syslog
 import logging, sys
 
-# for debugging only
-debug = 0
 Connected = 0
+
+def my_logging(msg):
+    if DEBUG :
+        logging.debug(msg)
+    syslog.syslog(syslog.LOG_INFO, msg)
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        if debug :
-            logging.debug('Connected to broker with the result code: ' + str(rc))
-        syslog.syslog(syslog.LOG_INFO, "Connected to broker with the result code: " + str(rc))
+        my_logging('Connected to broker with the result code: ' + str(rc))
         global Connected                #Use global variable
         Connected = 1                   #Signal connection 
     else:
-        if debug :
-            logging.debug('Connected to broker failed with the result code: ' + str(rc))
-        syslog.syslog(syslog.LOG_INFO, "Connected to broker failed with the result code: " + str(rc))
+        my_logging('Connected to broker failed with the result code: ' + str(rc))
 
 def on_disconnect(client, userdata, rc):
    global Connected
    Connected = 0
 
 def on_publish(client, userdata, result):             #create function for callback
-    if debug :
-        logging.debug('Data published result: ' + str(result))
-        syslog.syslog(syslog.LOG_INFO, "Data published result: " + str(result))
+    if DEBUG :
+        my_logging('Data published result: ' + str(result))
     pass
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 config = configparser.ConfigParser()
 config.read('owl2mqtt.conf')
+
+# for debugging only
+DEBUG = int(config['global']['debug'])
 
 OWL_PORT = int(config['owl']['owl_port'])
 OWL_GROUP = config['owl']['owl_group']
@@ -48,9 +49,7 @@ broker_port = int(config['mqtt']['port'])
 broker_username = config['mqtt']['username']
 broker_password = config['mqtt']['password']
 
-if debug :
-    logging.debug("Starting owl2mqtt on ip: " + OWL_LISTEN_IP)
-syslog.syslog(syslog.LOG_INFO, "Starting owl2mqtt on ip: " + OWL_LISTEN_IP)
+my_logging('Starting owl2mqtt on ip: ' + OWL_LISTEN_IP)
 
 client = mqttClient.Client("owl2mqtt client")
 client.username_pw_set(broker_username, password=broker_password)
@@ -71,9 +70,7 @@ sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:
     client.loop()
-    if debug :
-        logging.debug('Connected: ' + str(Connected))
-    syslog.syslog(syslog.LOG_INFO, "Connected: " + str(Connected))
+    my_logging('Connected: ' + str(Connected))
     time.sleep(0.5)
     
     if Connected == 1:
@@ -101,9 +98,7 @@ while True:
                 signal_rssi_value = signal.attrib["rssi"]
                 signal_lqi_value = signal.attrib["lqi"]
 
-            if debug :
-                logging.debug("reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
-            syslog.syslog(syslog.LOG_INFO, "reading info, timestamp: " + str(timestamp_value) + ", battery: " + str(battery_value))
+            my_logging('reading info, timestamp: ' + str(timestamp_value) + ', battery: ' + str(battery_value))
             client.publish("owl/"+root.tag+"/timestamp", timestamp_value)
             client.publish("owl/"+root.tag+"/battery", battery_value)
             client.publish("owl/"+root.tag+"/rssi", signal_rssi_value)
