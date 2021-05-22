@@ -1,3 +1,7 @@
+# Overview
+
+This program can be used to parse OWL Intuition packets (https://www.theowl.com/index.php/owl-intuition/), and publish to a mqtt server.
+
 # Installation
 Clone the repo
 ```
