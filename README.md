@@ -2,6 +2,8 @@
 
 This program can be used to parse OWL Intuition packets (https://www.theowl.com/index.php/owl-intuition/), and publish to a mqtt server.
 
+By default, it listen in multicast OWL address, but it you configure the push notifications (in https://www.owlintuition.com/) your server, you can listen in unicast by defining the owl\_multicast=0 and owl\_listen\_ip.
+
 # Installation
 Clone the repo
 ```
