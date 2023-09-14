@@ -1,5 +1,7 @@
 # Overview
 
+== YOU SHOULD NOT BUY THIS PRODUCT, BECAUSE IF THE SUBSCRIPTION ENDS THE PRODUCT WILL STOP WORKING AFTER A WHILE! (FOR EXAMPLE, WHEN IT IS NECESSARY TO CHANGE THE BATTERIES, IT IS NOT POSSIBLE TO DO IT WITHOUT A SUBSCRIPTION!!) ==
+
 This program can be used to parse OWL Intuition packets (https://www.theowl.com/index.php/owl-intuition/), and publish to a mqtt server.
 
 By default, it listen in multicast OWL address, but it you configure the push notifications (in https://www.owlintuition.com/) your server, you can listen in unicast by defining the owl\_multicast=0 and owl\_listen\_ip.
