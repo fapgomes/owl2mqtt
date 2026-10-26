@@ -89,3 +89,9 @@ Number                  owlrssi                     "RSSI [%d]"                 
 Number                  owllqi                      "lqi [%d]"                                  <qualityofservice>      (gOwl)                      { channel="mqtt:topic:rabbitmq:owl2mqtt:lqi" }
 ```
 ![Screenshot_20210323_160727](https://user-images.githubusercontent.com/39247306/112178710-e5941b00-8bf1-11eb-8791-71f7d7615a22.png)  
+
+## Support the project
+
+If this project is useful to you, consider buying me a coffee to help keep it going:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-fapgomes-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/fapgomes)
